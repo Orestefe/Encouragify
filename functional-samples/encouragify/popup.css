@@ -41,9 +41,10 @@ body{
   box-shadow: 0 0 0 2px #ff0000, 0 0 0 4px black;
  }
 
- .donation{
+ a{
   font-weight: 700;
   color: #fcfcff;
+  margin-bottom:5px;
  }
 
 
