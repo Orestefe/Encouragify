@@ -1,5 +1,7 @@
 # Encouragify
 
+![Encouragify logo](./logo.png)
+
 _Autonomously encourage all users in a StudyStream Focus Room in order to increase engagement and easily make the front page._
 
 ## Extension Installation
