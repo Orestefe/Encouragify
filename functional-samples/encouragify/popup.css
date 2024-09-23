@@ -1,0 +1,48 @@
+body{
+  background-color: #232630;
+  color: #fcfcff;
+}
+
+.container { 
+  padding: 10px 0 10px 0;
+  min-width: 250px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.title{
+  font-size: 32px;
+  margin: 10px 0 10px 0
+ }
+
+.btn {
+  height: 36px;
+  width: 125px;
+  margin: 15px 10px;
+  border-radius: 12px;
+  border: none;
+  outline: none;
+  color: #fcfcff;
+  background-color: #5a84fa;
+  font-weight: 700;
+  font-size: 24px;
+  text-align:center;
+ }    
+
+ .start {
+  box-shadow: 0 0 0 2px #5a84fa, 0 0 0 4px black;
+ }
+
+ .stop {
+  background: none;
+  background-color: #ff0000;
+  box-shadow: 0 0 0 2px #ff0000, 0 0 0 4px black;
+ }
+
+ .donation{
+  font-weight: 700;
+ }
+
+
