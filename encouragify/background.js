@@ -1,24 +1,24 @@
 let scriptRunning = false;
 
-// Helper function to query active tab and check if URL is valid
+// Define the URL pattern for the website you want the script to run on
+const allowedUrlPattern = "https://app.studystream.live/";
+
+// Helper function to get the active tab and ensure the URL matches the allowed pattern
 function getActiveTab(callback) {
 	chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
 		const tab = tabs[0];
 		const tabUrl = tab.url;
 
-		// Ensure the script is running on a valid page
-		if (
-			!tabUrl.startsWith("chrome://") &&
-			!tabUrl.startsWith("chrome-extension://")
-		) {
+		// Only run the script if the tab's URL matches the specific website
+		if (tabUrl.startsWith(allowedUrlPattern)) {
 			callback(tab);
 		} else {
-			console.warn("Cannot run/stop script on this page:", tabUrl);
+			console.warn("Cannot run script on this page:", tabUrl);
 		}
 	});
 }
 
-// Injects content.js and starts the script
+// Function to start the content script
 function startScript(tab) {
 	if (!scriptRunning) {
 		chrome.scripting.executeScript(
@@ -26,16 +26,9 @@ function startScript(tab) {
 				target: { tabId: tab.id },
 				files: ["content.js"],
 			},
-			(injectionResults) => {
-				if (chrome.runtime.lastError) {
-					console.error(
-						"Script injection failed:",
-						chrome.runtime.lastError.message
-					);
-				} else {
-					scriptRunning = true;
-					console.log("Script started on tab:", tab.id);
-				}
+			() => {
+				scriptRunning = true;
+				console.log("Script started on tab:", tab.id);
 			}
 		);
 	} else {
@@ -43,7 +36,7 @@ function startScript(tab) {
 	}
 }
 
-// Stops the script by invoking stopApp() in content.js
+// Function to stop the content script
 function stopScript(tab) {
 	if (scriptRunning) {
 		chrome.scripting.executeScript(
@@ -65,7 +58,7 @@ function stopScript(tab) {
 	}
 }
 
-// Handles messages from the popup or other parts of the extension
+// Listen for messages from the popup or other parts of the extension
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 	getActiveTab((tab) => {
 		if (message.action === "startScript") {
