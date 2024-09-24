@@ -5,16 +5,29 @@ body{
 
 .container { 
   padding: 10px 0 10px 0;
-  min-width: 250px;
+  min-width: 300px;
   display: flex;
   flex-direction: column;
-  justify-content: center;
   align-items: center;
 }
 
 .title{
   font-size: 32px;
   margin: 10px 0 10px 0
+ }
+
+ .status-container{
+  display:flex;
+ }
+
+ .status{
+  font-size: 24px;
+  font-weight: 500;
+  margin: 10px 5px;
+ }
+
+ .btn-container {
+  flex-direction: row;
  }
 
 .btn {
