@@ -1,21 +1,57 @@
+const STATUS_RUNNING = "RUNNING";
+const STATUS_STOPPED = "STOPPED";
+const ACTION_START_SCRIPT = "startScript";
+const ACTION_STOP_SCRIPT = "stopScript";
+const ACTION_STATUS_UPDATE = "statusUpdate";
+const ACTION_GET_STATUS = "getStatus";
+
 let scriptRunning = false;
-let currentStatus = "STOPPED"; // Track the current status
+let currentStatus = STATUS_STOPPED;
 
-chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-	// Handle startScript/stopScript actions
-	if (message.action === "startScript") {
-		chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+// Utility function to query the active tab
+function queryActiveTab(callback) {
+	chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+		if (tabs.length > 0) {
 			const tab = tabs[0];
-			const tabUrl = tab.url;
+			callback(tab);
+		} else {
+			console.error("No active tab found.");
+		}
+	});
+}
 
-			if (!scriptRunning) {
-				// Inject the content script
-				chrome.scripting.executeScript(
-					{
-						target: { tabId: tab.id },
-						files: ["content.js"],
-					},
-					() => {
+// Utility function to execute scripts in the active tab
+function executeScriptInTab(tabId, funcOrFiles, callback) {
+	const options =
+		typeof funcOrFiles === "function"
+			? { func: funcOrFiles }
+			: { files: funcOrFiles };
+
+	chrome.scripting.executeScript(
+		{
+			target: { tabId },
+			...options,
+		},
+		callback
+	);
+}
+
+// Helper function to update the script status
+function updateStatus(newStatus) {
+	currentStatus = newStatus;
+	chrome.runtime.sendMessage({
+		action: ACTION_STATUS_UPDATE,
+		status: newStatus,
+	});
+}
+
+// Message listener for actions
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+	queryActiveTab((tab) => {
+		switch (message.action) {
+			case ACTION_START_SCRIPT:
+				if (!scriptRunning) {
+					executeScriptInTab(tab.id, ["content.js"], () => {
 						if (chrome.runtime.lastError) {
 							console.error(
 								"Script injection failed:",
@@ -23,47 +59,41 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 							);
 						} else {
 							scriptRunning = true;
-							currentStatus = "RUNNING"; // Set the status to "RUNNING"
+							updateStatus(STATUS_RUNNING);
 							console.log("Script started on tab:", tab.id);
 						}
-					}
-				);
-			}
-		});
-	} else if (message.action === "stopScript") {
-		chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-			const tab = tabs[0];
+					});
+				}
+				break;
 
-			if (scriptRunning) {
-				chrome.scripting.executeScript(
-					{
-						target: { tabId: tab.id },
-						func: () => {
+			case ACTION_STOP_SCRIPT:
+				if (scriptRunning) {
+					executeScriptInTab(
+						tab.id,
+						() => {
 							if (typeof stopApp === "function") stopApp();
 						},
-					},
-					() => {
-						scriptRunning = false;
-						currentStatus = "STOPPED"; // Set the status to "STOPPED"
-						console.log("Script stopped on tab:", tab.id);
-					}
-				);
-			}
-		});
-	}
+						() => {
+							scriptRunning = false;
+							updateStatus(STATUS_STOPPED);
+							console.log("Script stopped on tab:", tab.id);
+						}
+					);
+				}
+				break;
 
-	// Handle status updates from content.js
-	if (message.action === "statusUpdate" && message.status) {
-		currentStatus = message.status;
-		// Forward the status update to the popup
-		chrome.runtime.sendMessage({
-			action: "statusUpdate",
-			status: currentStatus,
-		});
-	}
+			case ACTION_STATUS_UPDATE:
+				if (message.status) {
+					updateStatus(message.status);
+				}
+				break;
 
-	// Handle status request from popup.js
-	if (message.action === "getStatus") {
-		sendResponse({ status: currentStatus });
-	}
+			case ACTION_GET_STATUS:
+				sendResponse({ status: currentStatus });
+				break;
+
+			default:
+				console.warn(`Unknown action: ${message.action}`);
+		}
+	});
 });
