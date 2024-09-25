@@ -4,8 +4,7 @@
 
 _Automatically encourage all users in a StudyStream Focus Room to increase user engagement and easily make the front page._
 
-Case Study: Automating Social Interaction in StudyStream
-
+## Case Study: Automating Social Interaction in StudyStream
 StudyStream is a social media platform where users encourage and hold each other accountable during study sessions through video chatrooms. As a former student and frequent user, I observed how gaining "pins" (which allow users to rise in chatroom visibility) became a form of social currency. Users, primarily teens and young adults (17-25), often traded pins to improve their status within the community. To optimize this interaction, I developed an extension that automatically encourages other users, resulting in over 30 pins and significantly boosting engagement within the chatroom. This automation helped streamline social interactions while enhancing productivity and accountability.
 
 ## Extension Installation
