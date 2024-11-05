@@ -9,7 +9,7 @@ StudyStream is a social media platform where users encourage and hold each other
 
 ## Extension Installation
 ### From the Chrome Web Store
-1. Navigate to the [Encouragify page](google.com) on the Chrome Web Store
+1. Navigate to the [Encouragify page](https://chromewebstore.google.com/detail/encouragify-for-studystre/hiadfnpameiajhhdcejempkhhdbajmjj?hl=en&authuser=0) on the Chrome Web Store
 2. Install the extension
 
 ### Locally: 
